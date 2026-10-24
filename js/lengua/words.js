@@ -1000,6 +1000,10 @@
     {"w":"pesquero","syl":["pes","que","ro"],"t":1,"g":"m","pl":"pesqueros","cat":"transporte","img":"pesquero"},
     {"w":"multa","syl":["mul","ta"],"t":0,"g":"f","pl":"multas","cat":"transporte","img":"multa"},
     {"w":"tráiler","syl":["trái","ler"],"t":0,"g":"m","pl":"tráileres","cat":"transporte","img":"trailer"},
+    {"w":"pasaje","syl":["pa","sa","je"],"t":1,"g":"m","pl":"pasajes","cat":"transporte","img":"pasaje"},
+    {"w":"asiento","syl":["a","sien","to"],"t":1,"g":"m","pl":"asientos","cat":"transporte","img":"asiento"},
+    {"w":"viajero","syl":["via","je","ro"],"t":1,"g":"m","pl":"viajeros","cat":"transporte","img":"viajero"},
+    {"w":"despegue","syl":["des","pe","gue"],"t":1,"g":"m","pl":"despegues","cat":"transporte","img":"despegue"},
     // naturaleza
     {"w":"hoja","syl":["ho","ja"],"t":0,"g":"f","pl":"hojas","cat":"naturaleza","img":"hoja"},
     {"w":"sol","syl":["sol"],"t":0,"g":"m","pl":"soles","cat":"naturaleza","img":"sol"},
@@ -2034,6 +2038,7 @@
     {"w":"juzgado","syl":["juz","ga","do"],"t":1,"g":"m","pl":"juzgados","cat":"lugares","img":"juzgado"},
     {"w":"tribunal","syl":["tri","bu","nal"],"t":2,"g":"m","pl":"tribunales","cat":"lugares","img":"tribunal"},
     {"w":"canal","syl":["ca","nal"],"t":1,"g":"m","pl":"canales","cat":"lugares","img":"canal"},
+    {"w":"cartel","syl":["car","tel"],"t":1,"g":"m","pl":"carteles","cat":"lugares","img":"cartel"},
     {"w":"bordillo","syl":["bor","di","llo"],"t":1,"g":"m","pl":"bordillos","cat":"lugares","img":"bordillo"},
     {"w":"estanco","syl":["es","tan","co"],"t":1,"g":"m","pl":"estancos","cat":"lugares","img":"estanco"},
     {"w":"vivero","syl":["vi","ve","ro"],"t":1,"g":"m","pl":"viveros","cat":"lugares","img":"vivero"},
@@ -2052,7 +2057,9 @@
     {"w":"barranco","syl":["ba","rran","co"],"t":1,"g":"m","pl":"barrancos","cat":"lugares","img":"barranco"},
     {"w":"rocódromo","syl":["ro","có","dro","mo"],"t":1,"g":"m","pl":"rocódromos","cat":"lugares","img":"rocodromo"},
     {"w":"tumba","syl":["tum","ba"],"t":0,"g":"f","pl":"tumbas","cat":"lugares","img":"tumba"},
+    {"w":"cripta","syl":["crip","ta"],"t":0,"g":"f","pl":"criptas","cat":"lugares","img":"cripta"},
     {"w":"terminal","syl":["ter","mi","nal"],"t":2,"g":"f","pl":"terminales","cat":"lugares","img":"terminal"},
+    {"w":"cúpula","syl":["cú","pu","la"],"t":0,"g":"f","pl":"cúpulas","cat":"lugares","img":"cupula"},
     {"w":"recibidor","syl":["re","ci","bi","dor"],"t":3,"g":"m","pl":"recibidores","cat":"lugares","img":"recibidor"},
     {"w":"chiringuito","syl":["chi","rin","gui","to"],"t":2,"g":"m","pl":"chiringuitos","cat":"lugares","img":"chiringuito"},
     {"w":"balneario","syl":["bal","ne","a","rio"],"t":2,"g":"m","pl":"balnearios","cat":"lugares","img":"balneario"},
@@ -2066,6 +2073,10 @@
     {"w":"churrería","syl":["chu","rre","rí","a"],"t":2,"g":"f","pl":"churrerías","cat":"lugares","img":"churreria"},
     {"w":"boutique","syl":["bou","ti","que"],"t":1,"g":"f","pl":"boutiques","cat":"lugares","img":"boutique"},
     {"w":"lonja","syl":["lon","ja"],"t":0,"g":"f","pl":"lonjas","cat":"lugares","img":"lonja"},
+    {"w":"rincón","syl":["rin","cón"],"t":1,"g":"m","pl":"rincones","cat":"lugares","img":"rincon"},
+    {"w":"norte","syl":["nor","te"],"t":0,"g":"m","pl":"nortes","cat":"lugares","img":"norte"},
+    {"w":"oeste","syl":["o","es","te"],"t":1,"g":"m","pl":"oestes","cat":"lugares","img":"oeste"},
+    {"w":"hangar","syl":["han","gar"],"t":1,"g":"m","pl":"hangares","cat":"lugares","img":"hangar"},
     // instrumentos
     {"w":"violín","syl":["vio","lín"],"t":1,"g":"m","pl":"violines","cat":"instrumentos","img":"violin"},
     {"w":"violonchelo","syl":["vio","lon","che","lo"],"t":2,"g":"m","pl":"violonchelos","cat":"instrumentos","img":"violonchelo"},
@@ -2123,5 +2134,7 @@
     {"w":"gramófono","syl":["gra","mó","fo","no"],"t":1,"g":"m","pl":"gramófonos","cat":"instrumentos","img":"gramofono"},
     {"w":"himno","syl":["him","no"],"t":0,"g":"m","pl":"himnos","cat":"instrumentos","img":"himno"},
     {"w":"ópera","syl":["ó","pe","ra"],"t":0,"g":"f","pl":"óperas","cat":"instrumentos","img":"opera"},
+    {"w":"baile","syl":["bai","le"],"t":0,"g":"m","pl":"bailes","cat":"instrumentos","img":"baile"},
+    {"w":"eco","syl":["e","co"],"t":0,"g":"m","pl":"ecos","cat":"instrumentos","img":"eco"},
   ];
 })(typeof window !== 'undefined' ? window : globalThis);
