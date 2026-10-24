@@ -41,8 +41,15 @@
   }
   $('letra').addEventListener('input', letraUI);
   $('chips').addEventListener('click', (e) => { if (e.target.dataset.l) { $('letra').value = e.target.dataset.l; letraUI(); } });
+  // Nº de fichas automático: todo el nivel = una ficha por tema; un tema concreto = 1 ficha.
+  function autoSheets() {
+    const lv = curLevel();
+    if (!lv) return;
+    $('sheets').value = $('sub').value === 'all' ? Math.min(30, lv.sublevels.length) : 1;
+  }
   function showHint() {
     letraUI();
+    autoSheets();
     const lv = levels.find((l) => String(l.id) === $('level').value);
     if (!lv) return;
     const s = lv.sublevels.find((x) => x.id === $('sub').value);
@@ -59,7 +66,6 @@
       subId: $('sub').value,
       sheets: Math.max(1, Math.min(30, +$('sheets').value || 1)),
       perSheet: +$('per').value,
-      name: $('name').value.trim(),
       solutions: $('sol').checked,
     };
   }
