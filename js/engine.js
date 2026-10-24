@@ -347,7 +347,6 @@
     });
 
     doc.setFontSize(8); doc.setTextColor(140);
-    doc.text(`Semilla ${sheet.seed}`, mx, PAGE.h - 8);
     if (info.materia === 'lengua') doc.text('Pictogramas: ARASAAC (arasaac.org), Gobierno de Aragón, autor Sergio Palao. CC BY-NC-SA', w - mx, PAGE.h - 8, { align: 'right' });
     doc.text(`${num}`, w / 2, PAGE.h - 8, { align: 'center' });
     doc.setTextColor(0);

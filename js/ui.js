@@ -51,7 +51,6 @@
   }
   $('level').addEventListener('change', fillSubs);
   $('sub').addEventListener('change', showHint);
-  $('rand').addEventListener('click', () => { $('seed').value = 1 + Math.floor(Math.random() * 99999); });
 
   function opts() {
     return {
@@ -64,19 +63,25 @@
       perSheet: +$('per').value,
       name: $('name').value.trim(),
       solutions: $('sol').checked,
-      seed: Math.max(1, +$('seed').value || 1),
     };
   }
 
+  // Cada vez sale una ficha nueva (semilla aleatoria). Al descargar justo después de la vista previa,
+  // con los mismos ajustes, se descarga la misma ficha que se ha visto.
+  const newSeed = () => 1 + Math.floor(Math.random() * 2000000000);
+  let last = null;
   $('prev').addEventListener('click', () => {
-    const doc = buildPdf(opts());
+    const o = opts(), seed = newSeed();
+    const doc = buildPdf({ ...o, seed });
+    last = { key: JSON.stringify(o), seed };
     if (url) URL.revokeObjectURL(url);
     url = doc.output('bloburl');
     $('pv').innerHTML = `<iframe src="${url}" title="Vista previa del PDF"></iframe>`;
   });
   $('dl').addEventListener('click', () => {
     const o = opts();
-    buildPdf(o).save(`fichas-${o.materia}-nivel${o.levelId}-${o.subId}-semilla${o.seed}.pdf`);
+    const seed = last && last.key === JSON.stringify(o) ? last.seed : newSeed();
+    buildPdf({ ...o, seed }).save(`fichas-${o.materia}-nivel${o.levelId}-${o.subId}.pdf`);
   });
 
   let saved = 'mates';
