@@ -64,7 +64,7 @@
     doc.text(String(ex.a), vx - 3, base, { align: 'right' });
     doc.text(String(ex.b), vx + 4, base);
     doc.setLineWidth(0.7); doc.setDrawColor(0);
-    doc.line(vx, top - 2, vx, top + 28);
+    doc.line(vx, top - 2, vx, base + 3);
     doc.line(vx, base + 3, vx + 24, base + 3);
     const withRest = Array.isArray(ex.answer);
     if (answers) {
