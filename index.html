@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fichas de mates y lengua</title>
+<style>
+  :root { --bg:#f6f4ee; --card:#fff; --ink:#1d2a33; --muted:#66727b; --accent:#e0592a; --line:#e2ddd0; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#161a1d; --card:#20262a; --ink:#eef1f2; --muted:#9aa6ad; --accent:#ff7a4d; --line:#333c42; } }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:clamp(16px,1.05vw,20px)/1.45 system-ui,-apple-system,Segoe UI,sans-serif; }
+  .wrap { max-width:1800px; margin:0 auto; padding:24px clamp(16px,3vw,48px) 32px; display:grid; gap:24px; grid-template-columns:minmax(340px,26vw) 1fr; align-items:start; }
+  .card.ctrl { position:sticky; top:16px; }
+  @media (max-width:860px) { .wrap { grid-template-columns:1fr; } }
+  .top { grid-column:1/-1; display:flex; justify-content:space-between; align-items:flex-start; gap:16px; flex-wrap:wrap; }
+  .seg { display:flex; background:var(--card); border:1px solid var(--line); border-radius:999px; padding:4px; gap:4px; }
+  .seg button { border:0; background:transparent; border-radius:999px; padding:9px 22px; color:var(--muted); }
+  .seg button.on { background:var(--accent); color:#fff; }
+  body.lengua { --accent:#2f8f5b; }
+  @media (prefers-color-scheme: dark) { body.lengua { --accent:#4cc283; } }
+  h1 { margin:0; font-size:clamp(26px,2vw,36px); }
+  h1 small { display:block; font-size:.5em; font-weight:400; color:var(--muted); }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:18px; }
+  label { display:block; font-size:.85rem; color:var(--muted); margin:14px 0 4px; }
+  label:first-child { margin-top:0; }
+  select, input[type=text], input[type=number] { width:100%; padding:9px 10px; border:1px solid var(--line); border-radius:8px; background:var(--bg); color:var(--ink); font:inherit; }
+  .row { display:flex; gap:10px; } .row > div { flex:1; }
+  .check { display:flex; gap:8px; align-items:center; margin-top:14px; color:var(--ink); }
+  .check input { width:auto; }
+  .hint { font-size:.85rem; color:var(--muted); margin-top:6px; }
+  .btns { display:flex; gap:10px; margin-top:18px; flex-wrap:wrap; }
+  button { padding:11px 16px; border-radius:10px; border:1px solid var(--line); background:var(--bg); color:var(--ink); font:inherit; font-weight:600; cursor:pointer; }
+  button.primary { background:var(--accent); border-color:var(--accent); color:#fff; flex:1; }
+  .preview { height:calc(100vh - 130px); min-height:560px; display:flex; flex-direction:column; padding:12px; }
+  iframe { flex:1; width:100%; height:100%; min-height:0; border:1px solid var(--line); border-radius:10px; background:#fff; }
+  .chips { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+  .chips button { padding:5px 11px; font-size:.95rem; border-radius:8px; }
+  .chips button.on { background:var(--accent); border-color:var(--accent); color:#fff; }
+  .empty { margin:auto; color:var(--muted); text-align:center; }
+</style>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<meta name="theme-color" content="#e0592a">
+<script src="js/vendor/jspdf.umd.min.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <h1><span id="title">Fichas de mates</span> <small>Generador de ejercicios por niveles, de 7 a 10 años</small></h1>
+    <div class="seg" role="tablist" aria-label="Materia">
+      <button type="button" role="tab" data-m="mates" class="on">Mates</button>
+      <button type="button" role="tab" data-m="lengua">Lengua</button>
+    </div>
+  </div>
+  <input type="hidden" id="materia" value="mates">
+
+  <div class="card ctrl">
+    <label for="level">Nivel</label>
+    <select id="level"></select>
+    <label for="sub">Tema</label>
+    <select id="sub"></select>
+    <div class="hint" id="subHint"></div>
+    <div id="letraWrap" hidden>
+      <label for="letra">Letra de la ficha</label>
+      <input id="letra" type="text" maxlength="2" value="m" autocomplete="off">
+      <div class="chips" id="chips"></div>
+      <div class="hint" id="letraHint"></div>
+    </div>
+
+    <div class="row">
+      <div><label for="sheets">Nº de fichas</label><input id="sheets" type="number" min="1" max="30" value="5"></div>
+      <div><label for="per">Ejercicios por ficha</label>
+        <select id="per"><option>10</option><option>12</option><option>15</option><option selected>20</option><option>24</option><option>30</option></select></div>
+    </div>
+
+    <label for="name">Nombre del niño/a (opcional)</label>
+    <input id="name" type="text" maxlength="30" placeholder="Se imprime en la cabecera">
+
+    <label for="seed">Semilla</label>
+    <div class="row"><input id="seed" type="number" min="1" value="1"><button type="button" id="rand" title="Semilla aleatoria">Nueva</button></div>
+    <div class="hint">Con la misma semilla sale siempre la misma ficha.</div>
+
+    <div id="divWrap"><label for="divStyle">División en caja (solo mates)</label>
+    <select id="divStyle"><option value="jp">Japonesa (divisor a la izquierda)</option><option value="es">Española (divisor a la derecha)</option></select></div>
+    <div class="hint" id="attr" hidden>Pictogramas de ARASAAC (Gobierno de Aragón, autor Sergio Palao), licencia CC BY-NC-SA.</div>
+
+    <div class="check"><input id="sol" type="checkbox" checked><span>Añadir hojas de soluciones al final</span></div>
+
+    <div class="btns">
+      <button type="button" id="prev">Vista previa</button>
+      <button type="button" id="dl" class="primary">Descargar PDF</button>
+    </div>
+  </div>
+
+  <div class="card preview" id="pv"><div class="empty">Elige nivel y tema y pulsa «Vista previa».</div></div>
+</div>
+
+<script src="js/rng.js"></script>
+<script src="levels/levels_1_4.js"></script>
+<script src="levels/levels_5_8.js"></script>
+<script src="levels/levels_9_11.js"></script>
+<script src="levels/levels_tablas.js"></script>
+<script src="js/lengua/words.js"></script>
+<script src="js/lengua/images.js"></script>
+<script src="js/lengua/lib.js"></script>
+<script src="levels/lengua/lengua_1_4.js"></script>
+<script src="levels/lengua/lengua_5_8.js"></script>
+<script src="levels/lengua/lengua_9_12.js"></script>
+<script src="levels/lengua/lengua_letra.js"></script>
+<script src="js/order.js"></script>
+<script src="js/engine.js"></script>
+<script src="js/ui.js"></script>
+</body>
+</html>

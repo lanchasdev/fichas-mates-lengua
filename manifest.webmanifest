@@ -1,0 +1,12 @@
+{
+  "name": "Fichas de mates y lengua",
+  "short_name": "Fichas",
+  "description": "Generador de fichas de mates y lengua en PDF, de 7 a 10 años",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f6f4ee",
+  "theme_color": "#e0592a",
+  "lang": "es",
+  "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}
