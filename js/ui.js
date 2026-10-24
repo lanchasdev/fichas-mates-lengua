@@ -17,7 +17,6 @@
   function loadLevels() {
     levels = ($('materia').value === 'lengua' ? LENGUA_LEVELS : KUMON_LEVELS).slice().sort((a, b) => a.id - b.id);
     $('level').innerHTML = levels.map((l) => `<option value="${l.id}">Nivel ${l.id} · ${l.name} (${l.age})</option>`).join('');
-    $('divWrap').hidden = $('materia').value !== 'mates';
     $('attr').hidden = $('materia').value !== 'lengua';
     fillSubs();
   }
@@ -55,7 +54,6 @@
   function opts() {
     return {
       materia: $('materia').value,
-      divStyle: $('divStyle').value,
       letra: $('letra').value,
       levelId: $('level').value,
       subId: $('sub').value,

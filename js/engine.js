@@ -57,15 +57,14 @@
 
   // División en caja japonesa (método Kumon): divisor a la izquierda, dividendo dentro de la caja
   // y el cociente encima de la raya.
-  let divStyle = 'jp';
-  // Caja española: dividendo | divisor, cociente bajo el divisor (464 | 7).
-  function drawDivBoxEs(doc, ex, x, y, w, h, answers, take) {
+  // División en caja: dividendo | divisor, con la raya debajo del divisor y el cociente debajo de ella.
+  function drawDivBox(doc, ex, x, y, w, h, answers, take) {
     const fs = 20, x0 = x + w / 2 - 22, top = y + h * 0.24, base = top + 8, vx = x0 + 20;
     doc.setFontSize(fs); doc.setTextColor(0);
     doc.text(String(ex.a), vx - 3, base, { align: 'right' });
     doc.text(String(ex.b), vx + 4, base);
     doc.setLineWidth(0.7); doc.setDrawColor(0);
-    doc.line(vx, top - 2, vx, top + 34);
+    doc.line(vx, top - 2, vx, top + 28);
     doc.line(vx, base + 3, vx + 24, base + 3);
     const withRest = Array.isArray(ex.answer);
     if (answers) {
@@ -77,33 +76,6 @@
       doc.text('resto', x0 - 9, base + 25);
       doc.setTextColor(0);
       drawBox(doc, x0 + 1, base + 19, 10, 8);
-    }
-  }
-
-  function drawDivBox(doc, ex, x, y, w, h, answers, take) {
-    if (divStyle === 'es') return drawDivBoxEs(doc, ex, x, y, w, h, answers, take);
-    const fs = 20;
-    doc.setFontSize(fs);
-    const dw = Math.max(24, doc.getTextWidth(String(ex.a)) + 10);
-    const x0 = x + w / 2 - (14 + dw) / 2, vx = x0 + 14;
-    const top = y + h * 0.36, base = top + 8;
-    doc.setTextColor(0);
-    doc.text(String(ex.b), vx - 3, base, { align: 'right' });
-    doc.text(String(ex.a), vx + 4, base);
-    doc.setLineWidth(0.7); doc.setDrawColor(0);
-    doc.line(vx, top - 2, vx, base + 3);
-    doc.line(vx, top - 2, vx + dw, top - 2);
-    const withRest = Array.isArray(ex.answer);
-    if (answers) {
-      ansText(doc, take(), vx + dw / 2 + 2, top - 5, fs);
-    }
-    if (withRest) {
-      const by = base + 8;
-      doc.setFontSize(9); doc.setTextColor(120);
-      doc.text('resto', vx + 4, by + 5.5);
-      doc.setTextColor(0);
-      drawBox(doc, vx + 15, by, 10, 8);
-      if (answers) ansText(doc, take(), vx + 20, by + 6, 14);
     }
   }
 
@@ -356,7 +328,6 @@
   g.buildPdf = function (opts) {
     const { jsPDF } = g.jspdf;
     const materia = opts.materia || 'mates';
-    divStyle = opts.divStyle === 'es' ? 'es' : 'jp';
     const lv = levelsOf(materia).find((l) => String(l.id) === String(opts.levelId));
     const subs = opts.subId === 'all' ? lv.sublevels : [lv.sublevels.find((s) => s.id === opts.subId)];
     const letra = (String(opts.letra || 'm').trim().toLowerCase().match(/^[a-zñü]{1,2}$/) || ['m'])[0];
