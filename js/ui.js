@@ -120,14 +120,36 @@
     let doc;
     try { doc = buildPdf({ ...o, seed }); doc.setProperties({ title: limpio(titulo(o)) }); } catch (e) { frame = null; $('pv').innerHTML = '<div class="empty">No se pudo generar esta ficha (' + e.message + ').</div>'; return; }
     last = { key: JSON.stringify(o), seed };
-    const old = url;
-    url = doc.output('bloburl') + PDF_VIEW;
-    if (!frame || !frame.isConnected) {
-      $('pv').innerHTML = '<iframe title="Vista previa del PDF"></iframe>';
-      frame = $('pv').querySelector('iframe');
-    }
-    frame.src = url;
-    if (old) setTimeout(() => URL.revokeObjectURL(old.split('#')[0]), 3000);
+    const nombre = limpio(titulo(o)), mine = ++previewId;
+    pdfUrl(doc, nombre).then((u) => {
+      if (mine !== previewId) return;
+      const old = url;
+      url = u;
+      if (!frame || !frame.isConnected) {
+        $('pv').innerHTML = '<iframe title="Vista previa del PDF"></iframe>';
+        frame = $('pv').querySelector('iframe');
+      }
+      frame.src = u;
+      if (old && old.startsWith('blob:')) setTimeout(() => URL.revokeObjectURL(old.split('#')[0]), 3000);
+    });
+  }
+  // El visor del navegador guarda el PDF con el nombre de su dirección: si el service worker está activo,
+  // se sirve desde una dirección con el título legible (y Content-Disposition) para que «Guardar» lo proponga.
+  let previewId = 0;
+  async function pdfUrl(doc, nombre) {
+    const blob = doc.output('blob');
+    try {
+      if (navigator.serviceWorker && navigator.serviceWorker.controller && window.caches) {
+        const path = 'preview/' + encodeURIComponent(nombre) + '.pdf';
+        const c = await caches.open('fichas-preview');
+        await c.put(new Request(path), new Response(blob, { headers: {
+          'Content-Type': 'application/pdf',
+          'Content-Disposition': "inline; filename*=UTF-8''" + encodeURIComponent(nombre + '.pdf'),
+        } }));
+        return path + '?v=' + previewId + PDF_VIEW;
+      }
+    } catch (e) { /* sin caché: vale el blob */ }
+    return URL.createObjectURL(blob) + PDF_VIEW;
   }
   function schedule() { clearTimeout(timer); timer = setTimeout(preview, 300); }
   $('dl').addEventListener('click', () => {
@@ -144,5 +166,9 @@
   setMateria(saved === 'lengua' && LENGUA_LEVELS.length ? 'lengua' : 'mates', false);
   preview();
   setTimeout(() => ensureImages().catch(() => {}), 2500);
-  if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(() => {});
+  if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+    // al activarse el service worker por primera vez, se rehace la vista previa para que use el nombre legible
+    navigator.serviceWorker.addEventListener('controllerchange', () => schedule());
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  }
 })();
