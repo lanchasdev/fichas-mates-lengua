@@ -1,5 +1,20 @@
 (function () {
   const $ = (id) => document.getElementById(id);
+  // Los pictogramas pesan unos 12 MB: se cargan aparte para que la web arranque al instante.
+  let imgPromise = null;
+  function ensureImages() {
+    if (window.LENGUA_IMGS) return Promise.resolve();
+    if (!imgPromise) {
+      imgPromise = new Promise((res, rej) => {
+        const sc = document.createElement('script');
+        sc.src = 'js/lengua/images.js';
+        sc.onload = res;
+        sc.onerror = () => { imgPromise = null; rej(new Error('pictogramas')); };
+        document.head.appendChild(sc);
+      });
+    }
+    return imgPromise;
+  }
   let url = null, levels = [];
 
   function setMateria(m, save) {
@@ -81,11 +96,17 @@
   // La vista previa se rehace sola con cada cambio (y al abrir la página).
   let timer = null, frame = null;
   function preview() {
+    if ($('materia').value === 'lengua' && !window.LENGUA_IMGS) {
+      frame = null;
+      $('pv').innerHTML = '<div class="empty">Cargando los pictogramas (solo la primera vez, unos segundos)…</div>';
+      ensureImages().then(schedule, () => { $('pv').innerHTML = '<div class="empty">No se pudieron cargar los pictogramas. Comprueba la conexión y recarga la página.</div>'; });
+      return;
+    }
     const lv = curLevel();
     if (!lv) { $('pv').innerHTML = '<div class="empty">Todavía no hay niveles de esta materia.</div>'; return; }
     const o = opts(), seed = newSeed();
     let doc;
-    try { doc = buildPdf({ ...o, seed }); } catch (e) { $('pv').innerHTML = '<div class="empty">No se pudo generar esta ficha.</div>'; return; }
+    try { doc = buildPdf({ ...o, seed }); } catch (e) { frame = null; $('pv').innerHTML = '<div class="empty">No se pudo generar esta ficha (' + e.message + ').</div>'; return; }
     last = { key: JSON.stringify(o), seed };
     const old = url;
     url = doc.output('bloburl') + PDF_VIEW;
@@ -98,6 +119,7 @@
   }
   function schedule() { clearTimeout(timer); timer = setTimeout(preview, 300); }
   $('dl').addEventListener('click', () => {
+    if ($('materia').value === 'lengua' && !window.LENGUA_IMGS) { ensureImages().then(() => $('dl').click()); return; }
     const o = opts();
     const seed = last && last.key === JSON.stringify(o) ? last.seed : newSeed();
     buildPdf({ ...o, seed }).save(`fichas-${o.materia}-nivel${o.levelId}-${o.subId}.pdf`);
@@ -107,5 +129,6 @@
   try { saved = localStorage.getItem('materia') || 'mates'; } catch (e) {}
   setMateria(saved === 'lengua' && LENGUA_LEVELS.length ? 'lengua' : 'mates', false);
   preview();
+  setTimeout(() => ensureImages().catch(() => {}), 2500);
   if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(() => {});
 })();

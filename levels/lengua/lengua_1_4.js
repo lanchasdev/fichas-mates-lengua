@@ -267,7 +267,13 @@
   }
   const MPB = [{ re: /m(?=[pb])/, ans: 'm' }, { re: /n(?=[ctdgfzsl])/, ans: 'n' }];
   const g41 = ortTopic(MPB, ['mp', 'mb', 'n'], null, null, () => ['m', 'n']);
-  const g42 = ortTopic([{ re: /rr/, ans: 'rr' }, { re: /(?<=[aeiouáéíóú])r(?=[aeiouáéíóú])/, ans: 'r' }, { re: /^r(?=[aeiouáéíóú])/, ans: 'r' }], ['rr', 'r'], ['rrNeed', 'rNeed'], null, () => ['r', 'rr']);
+  // «r» entre vocales (sin lookbehind, que no entiende Safari antiguo): el índice apunta a la r
+  const R_INTERVOCALICA = {
+    exec(w) { const m = /[aeiouáéíóú]r(?=[aeiouáéíóú])/.exec(w); if (!m) return null; const r = ['r']; r.index = m.index + 1; return r; },
+    test(w) { return this.exec(w) !== null; },
+    toString() { return '/vrv/'; },
+  };
+  const g42 = ortTopic([{ re: /rr/, ans: 'rr' }, { re: R_INTERVOCALICA, ans: 'r' }, { re: /^r(?=[aeiouáéíóú])/, ans: 'r' }], ['rr', 'r'], ['rrNeed', 'rNeed'], null, () => ['r', 'rr']);
   const g43 = ortTopic([{ re: /c(?=[aouáóú])/, ans: 'c' }, { re: /qu(?=[eiéí])/, ans: 'qu' }], ['c', 'qu'], null, null, () => ['c', 'qu']);
   const g44 = ortTopic([{ re: /z(?=[aouáóú])/, ans: 'z' }, { re: /c(?=[eiéí])/, ans: 'c' }], ['z', 'ce'], null, null, () => ['z', 'c']);
   const g45 = ortTopic([{ re: /g(?=[aoáó])/, ans: 'g' }, { re: /gu(?=[eiéí])/, ans: 'gu' }], ['g', 'gu'], null, null, () => ['g', 'gu']);

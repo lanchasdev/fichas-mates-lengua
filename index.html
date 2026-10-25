@@ -41,9 +41,20 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <meta name="theme-color" content="#e0592a">
+<script>
+var __errs = [];
+window.addEventListener('error', function (e) { __errs.push((e.filename || '').split('/').pop() + ': ' + e.message); });
+window.addEventListener('load', function () {
+  setTimeout(function () {
+    var l = document.getElementById('level');
+    if (l && !l.options.length) document.getElementById('pv').innerHTML = '<div class="empty">No se ha podido iniciar la web.<br>' + (__errs.join('<br>') || 'Recarga la página (Ctrl/Cmd + Mayús + R).') + '</div>';
+  }, 600);
+});
+</script>
 <script src="js/vendor/jspdf.umd.min.js"></script>
 </head>
 <body>
+<noscript>Esta web necesita JavaScript activado.</noscript>
 <div class="wrap">
   <div class="top">
     <h1><span id="title">Fichas de mates</span> <small>Generador de ejercicios por niveles, de 7 a 10 años</small></h1>
@@ -91,7 +102,6 @@
 <script src="levels/levels_9_11.js"></script>
 <script src="levels/levels_tablas.js"></script>
 <script src="js/lengua/words.js"></script>
-<script src="js/lengua/images.js"></script>
 <script src="js/lengua/lib.js"></script>
 <script src="levels/lengua/lengua_1_4.js"></script>
 <script src="levels/lengua/lengua_5_8.js"></script>
