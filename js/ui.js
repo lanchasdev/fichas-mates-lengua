@@ -8,9 +8,9 @@
     document.querySelectorAll('.seg button').forEach((b) => b.classList.toggle('on', b.dataset.m === m));
     $('title').textContent = m === 'lengua' ? 'Fichas de lengua' : 'Fichas de mates';
     document.title = $('title').textContent;
-    $('pv').innerHTML = '<div class="empty">Elige nivel y tema y pulsa «Vista previa».</div>';
     if (save) { try { localStorage.setItem('materia', m); } catch (e) {} }
     loadLevels();
+    schedule();
   }
   document.querySelectorAll('.seg button').forEach((b) => b.addEventListener('click', () => setMateria(b.dataset.m, true)));
 
@@ -55,8 +55,11 @@
     const s = lv.sublevels.find((x) => x.id === $('sub').value);
     $('subHint').textContent = s ? (s.hint || '') : `${lv.sublevels.length} temas; las fichas avanzan del más fácil al más difícil.`;
   }
-  $('level').addEventListener('change', fillSubs);
-  $('sub').addEventListener('change', showHint);
+  $('level').addEventListener('change', () => { fillSubs(); schedule(); });
+  $('sub').addEventListener('change', () => { showHint(); schedule(); });
+  ['sheets', 'letra'].forEach((id) => $(id).addEventListener('input', () => schedule()));
+  ['per', 'sol'].forEach((id) => $(id).addEventListener('change', () => schedule()));
+  $('chips').addEventListener('click', (e) => { if (e.target.dataset.l) schedule(); });
 
   function opts() {
     return {
@@ -74,14 +77,26 @@
   // con los mismos ajustes, se descarga la misma ficha que se ha visto.
   const newSeed = () => 1 + Math.floor(Math.random() * 2000000000);
   let last = null;
-  $('prev').addEventListener('click', () => {
+  const PDF_VIEW = '#navpanes=0&pagemode=none';
+  // La vista previa se rehace sola con cada cambio (y al abrir la página).
+  let timer = null, frame = null;
+  function preview() {
+    const lv = curLevel();
+    if (!lv) { $('pv').innerHTML = '<div class="empty">Todavía no hay niveles de esta materia.</div>'; return; }
     const o = opts(), seed = newSeed();
-    const doc = buildPdf({ ...o, seed });
+    let doc;
+    try { doc = buildPdf({ ...o, seed }); } catch (e) { $('pv').innerHTML = '<div class="empty">No se pudo generar esta ficha.</div>'; return; }
     last = { key: JSON.stringify(o), seed };
-    if (url) URL.revokeObjectURL(url);
-    url = doc.output('bloburl');
-    $('pv').innerHTML = `<iframe src="${url}" title="Vista previa del PDF"></iframe>`;
-  });
+    const old = url;
+    url = doc.output('bloburl') + PDF_VIEW;
+    if (!frame || !frame.isConnected) {
+      $('pv').innerHTML = '<iframe title="Vista previa del PDF"></iframe>';
+      frame = $('pv').querySelector('iframe');
+    }
+    frame.src = url;
+    if (old) setTimeout(() => URL.revokeObjectURL(old.split('#')[0]), 3000);
+  }
+  function schedule() { clearTimeout(timer); timer = setTimeout(preview, 300); }
   $('dl').addEventListener('click', () => {
     const o = opts();
     const seed = last && last.key === JSON.stringify(o) ? last.seed : newSeed();
@@ -91,5 +106,6 @@
   let saved = 'mates';
   try { saved = localStorage.getItem('materia') || 'mates'; } catch (e) {}
   setMateria(saved === 'lengua' && LENGUA_LEVELS.length ? 'lengua' : 'mates', false);
+  preview();
   if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(() => {});
 })();

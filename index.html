@@ -11,7 +11,7 @@
   body { margin:0; background:var(--bg); color:var(--ink); font:clamp(16px,1.05vw,20px)/1.45 system-ui,-apple-system,Segoe UI,sans-serif; }
   .wrap { max-width:1800px; margin:0 auto; padding:24px clamp(16px,3vw,48px) 32px; display:grid; gap:24px; grid-template-columns:minmax(340px,26vw) 1fr; align-items:start; }
   .card.ctrl { position:sticky; top:16px; }
-  @media (max-width:860px) { .wrap { grid-template-columns:1fr; } }
+  @media (max-width:860px) { .wrap { grid-template-columns:1fr; } .card.ctrl { position:static; } .preview { height:92vh; min-height:680px; } }
   .top { grid-column:1/-1; display:flex; justify-content:space-between; align-items:flex-start; gap:16px; flex-wrap:wrap; }
   .seg { display:flex; background:var(--card); border:1px solid var(--line); border-radius:999px; padding:4px; gap:4px; }
   .seg button { border:0; background:transparent; border-radius:999px; padding:9px 22px; color:var(--muted); }
@@ -78,12 +78,11 @@
     <div class="check"><input id="sol" type="checkbox"><span>Añadir hojas de soluciones al final</span></div>
 
     <div class="btns">
-      <button type="button" id="prev">Vista previa</button>
       <button type="button" id="dl" class="primary">Descargar PDF</button>
     </div>
   </div>
 
-  <div class="card preview" id="pv"><div class="empty">Elige nivel y tema y pulsa «Vista previa».</div></div>
+  <div class="card preview" id="pv"><div class="empty">Generando la vista previa…</div></div>
 </div>
 
 <script src="js/rng.js"></script>
