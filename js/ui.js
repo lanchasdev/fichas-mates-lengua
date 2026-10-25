@@ -88,6 +88,18 @@
     };
   }
 
+  // Título legible para el PDF y el archivo: «Lengua - Nivel 3 Las sílabas - Contar sílabas - 8 fichas»
+  function titulo(o) {
+    const lv = curLevel();
+    const sub = lv && lv.sublevels.find((x) => x.id === o.subId);
+    const partes = [o.materia === 'lengua' ? 'Lengua' : 'Mates', 'Nivel ' + o.levelId + ' ' + (lv ? lv.name : ''),
+      sub ? sub.name : 'Todo el nivel'];
+    if (lv && lv.needsLetter) partes.push('Letra ' + (o.letra || 'm').trim().toLowerCase());
+    partes.push(o.sheets + (o.sheets === 1 ? ' ficha' : ' fichas'));
+    return partes.join(' - ');
+  }
+  const limpio = (t) => t.replace(/[\\/:*?"<>|¿¡]+/g, '').replace(/\s+/g, ' ').trim();
+
   // Cada vez sale una ficha nueva (semilla aleatoria). Al descargar justo después de la vista previa,
   // con los mismos ajustes, se descarga la misma ficha que se ha visto.
   const newSeed = () => 1 + Math.floor(Math.random() * 2000000000);
@@ -106,7 +118,7 @@
     if (!lv) { $('pv').innerHTML = '<div class="empty">Todavía no hay niveles de esta materia.</div>'; return; }
     const o = opts(), seed = newSeed();
     let doc;
-    try { doc = buildPdf({ ...o, seed }); } catch (e) { frame = null; $('pv').innerHTML = '<div class="empty">No se pudo generar esta ficha (' + e.message + ').</div>'; return; }
+    try { doc = buildPdf({ ...o, seed }); doc.setProperties({ title: limpio(titulo(o)) }); } catch (e) { frame = null; $('pv').innerHTML = '<div class="empty">No se pudo generar esta ficha (' + e.message + ').</div>'; return; }
     last = { key: JSON.stringify(o), seed };
     const old = url;
     url = doc.output('bloburl') + PDF_VIEW;
@@ -122,7 +134,9 @@
     if ($('materia').value === 'lengua' && !window.LENGUA_IMGS) { ensureImages().then(() => $('dl').click()); return; }
     const o = opts();
     const seed = last && last.key === JSON.stringify(o) ? last.seed : newSeed();
-    buildPdf({ ...o, seed }).save(`fichas-${o.materia}-nivel${o.levelId}-${o.subId}.pdf`);
+    const doc = buildPdf({ ...o, seed }), nombre = limpio(titulo(o));
+    doc.setProperties({ title: nombre });
+    doc.save(nombre + '.pdf');
   });
 
   let saved = 'mates';
