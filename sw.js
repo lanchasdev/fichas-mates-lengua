@@ -1,5 +1,5 @@
 // Caché sencilla: tras la primera visita la web funciona sin conexión.
-const V = 'fichas-v2';
+const V = 'fichas-v3';
 self.addEventListener('install', (e) => { self.skipWaiting(); });
 self.addEventListener('activate', (e) => {
   e.waitUntil(caches.keys().then((ks) => Promise.all(ks.filter((k) => k !== V && k !== 'fichas-preview').map((k) => caches.delete(k)))).then(() => self.clients.claim()));
@@ -12,7 +12,8 @@ self.addEventListener('fetch', (e) => {
     return;
   }
   e.respondWith(
-    fetch(e.request).then((r) => {
+    // no-cache: revalida con el servidor en cada visita (si no cambió responde 304 y no se vuelve a descargar)
+    fetch(e.request.url, { cache: 'no-cache' }).then((r) => {
       const c = r.clone();
       caches.open(V).then((ch) => ch.put(e.request, c));
       return r;
